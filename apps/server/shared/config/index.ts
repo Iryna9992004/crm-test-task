@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv'
+import * as dotenv from 'dotenv';
 dotenv.config();
 
 interface ConfigI {
@@ -6,8 +6,7 @@ interface ConfigI {
     url: string;
   };
   jwt: {
-    access_secret: string;
-    refresh_secret: string;
+    secret: string;
   };
 }
 
@@ -16,7 +15,6 @@ export const config: ConfigI = {
     url: process.env.DB_URL || '',
   },
   jwt: {
-    access_secret: process.env.JWT_ACCESS_SECRET || 'cdcddc',
-    refresh_secret: process.env.JWT_REFRESH_SECRET || 'dvvdfdvf',
+    secret: process.env.JWT_SECRET || 'cdcddc',
   },
 };

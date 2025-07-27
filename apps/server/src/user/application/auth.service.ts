@@ -3,6 +3,7 @@ import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcryptjs';
 import { UserService } from './user.service';
 import { User } from '../domain/entities/user.entity';
+import { config } from 'shared/config';
 
 @Injectable()
 export class AuthService {
@@ -28,15 +29,23 @@ export class AuthService {
     return { accessToken, refreshToken, user };
   }
 
-  async refresh(user: User): Promise<{ accessToken: string; refreshToken: string }> {
-    const accessToken = this.generateAccessToken(user);
-    const refreshToken = this.generateRefreshToken(user);
-    return { accessToken, refreshToken };
+  async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string; user: User }> {
+    try {
+      const payload = jwt.verify(refreshToken, config.jwt.secret) as any;
+      const user = await this.userService.findByEmail(payload.email);
+      if (!user) throw new UnauthorizedException('User not found');
+      const accessToken = this.generateAccessToken(user);
+      const newRefreshToken = this.generateRefreshToken(user);
+      return { accessToken, refreshToken: newRefreshToken, user };
+    } catch (err) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
   }
 
   generateAccessToken(user: User): string {
     return jwt.sign(
       { sub: user.username, email: user.email },
+      config.jwt.secret,
       { expiresIn: '15m' },
     );
   }
@@ -44,6 +53,7 @@ export class AuthService {
   generateRefreshToken(user: User): string {
     return jwt.sign(
       { sub: user.username, email: user.email },
+      config.jwt.secret,
       { expiresIn: '1d' },
     );
   }
