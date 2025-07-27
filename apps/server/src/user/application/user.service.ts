@@ -15,7 +15,8 @@ export class UserService {
     if (foundUser) {
       throw new BadRequestException('User with this email already exists');
     }
-    return new User(username, email, password);
+    const user = new User(username, email, password);
+    return this.userRepository.save(user);
   }
 
   async findByEmail(email: string): Promise<User | null> {
