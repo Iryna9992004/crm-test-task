@@ -2,13 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IUserRepository } from 'src/user/domain/repos/user.repository';
-import { UserSchema } from '../schemas/user.schema';
 import { User } from 'src/user/domain/entities/user.entity';
-import { Repo } from 'src/user/domain/entities/repo.entity';
+import { UserSchema } from '../schemas/user.schema';
 
 @Injectable()
 export class UserRepositoryMongo implements IUserRepository {
-  constructor(@InjectModel(UserSchema.name) private readonly model: Model<UserSchema>) {}
+  constructor(@InjectModel(User.name) private readonly model: Model<UserSchema>) {}
 
   async findByEmail(email: string): Promise<User | null> {
     const doc = await this.model.findOne({ email });
