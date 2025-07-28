@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 @Schema()
-export class RepoSchema {
+export class RepoSchemaClass {
   @Prop()
   projectOwner: string;
 
@@ -35,3 +35,4 @@ export class UserSchema extends Document {
 }
 
 export const UserSchemaModel = SchemaFactory.createForClass(UserSchema);
+export const RepoSchema = SchemaFactory.createForClass(RepoSchemaClass);

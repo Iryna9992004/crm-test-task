@@ -8,6 +8,10 @@ interface ConfigI {
   jwt: {
     secret: string;
   };
+  github: {
+    api: string;
+    api_key: string;
+  }
 }
 
 export const config: ConfigI = {
@@ -17,4 +21,8 @@ export const config: ConfigI = {
   jwt: {
     secret: process.env.JWT_SECRET || 'cdcddc',
   },
+  github: {
+    api: process.env.GITHUB_API || "some_url",
+    api_key: process.env.GITHUB_API_KEY || "some_key",
+  }
 };

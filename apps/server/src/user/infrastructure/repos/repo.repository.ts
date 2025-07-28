@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IRepoRepository } from 'src/user/domain/repos/repo.repository';
-import { RepoSchema } from '../schemas/user.schema';
+import { RepoSchemaClass } from '../schemas/user.schema';
 import { Repo } from 'src/user/domain/entities/repo.entity';
 
 @Injectable()
 export class RepoRepositoryMongo implements IRepoRepository {
-  constructor(@InjectModel(RepoSchema.name) private readonly model: Model<RepoSchema>) {}
+  constructor(@InjectModel(RepoSchemaClass.name) private readonly model: Model<RepoSchemaClass>) {}
 
   async getAllByUsername(username: string): Promise<Repo[]> {
     const docs = await this.model.find({ projectOwner: username });
@@ -24,7 +24,7 @@ export class RepoRepositoryMongo implements IRepoRepository {
       dateTimeUTC: repo.dateTimeUTC,
     };
     const doc = await this.model.findOneAndUpdate(
-      { name: repo.name },
+      { projectOwner: repo.projectOwner, name: repo.name },
       plain,
       { new: true, upsert: true }
     );
