@@ -1,12 +1,15 @@
 import React from 'react';
 
-export interface RepoProps {
+export interface RepoData {
   projectOwner: string;
   name: string;
   stars: number;
   forks: number;
   issues: number;
   dateTimeUTC: string;
+}
+
+export interface RepoProps extends RepoData {
   onEdit: () => void;
   onDelete: () => void;
 }

@@ -13,7 +13,7 @@ interface RegisterData {
 
 export function useRegister() {
   const navigate = useNavigate();
-  
+
   return useCallback(async (data: RegisterData) => {
     const response = await axios.post(`${BASE_URL}/auth/register`, data, {
       headers: { 'Content-Type': 'application/json' },
@@ -21,5 +21,5 @@ export function useRegister() {
     });
     navigate('/repos')
     return response.data;
-  }, []);
+  }, [navigate]);
 }

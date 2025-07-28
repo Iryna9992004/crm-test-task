@@ -4,7 +4,7 @@ import { useRegister } from '../../hooks/auth/useRegister';
 import { toast } from 'react-toastify';
 import styles from './auth-form.module.css';
 import { useContext } from 'react';
-import { UserContext } from '../../providers/UserProvider';
+import { UserContext } from '../../providers/UserContext';
 
 interface AuthFormProps {
   mode: 'login' | 'register';
@@ -39,10 +39,16 @@ const AuthForm = ({ mode }: AuthFormProps) => {
         user = res.user;
       }
       setUser(user);
-    } catch (error: any) {
-      const serverMessage = error?.response?.data?.message;
-      const axiosMessage = error?.message;
-      toast.error(serverMessage || axiosMessage || 'Authentication failed');
+    } catch (error: unknown) {
+      let message = 'Authentication failed';
+      if (error && typeof error === 'object') {
+        if ('response' in error && typeof error.response === 'object' && error.response && 'data' in error.response && typeof error.response.data === 'object' && error.response.data && 'message' in error.response.data) {
+          message = (error.response.data as { message?: string }).message || message;
+        } else if ('message' in error && typeof error.message === 'string') {
+          message = error.message;
+        }
+      }
+      toast.error(message);
     }
   };
 

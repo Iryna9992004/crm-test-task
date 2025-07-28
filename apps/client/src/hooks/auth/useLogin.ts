@@ -11,7 +11,7 @@ interface LoginData {
 
 export function useLogin() {
   const navigate = useNavigate();
-  
+
   return useCallback(async (data: LoginData) => {
     const response = await axios.post(`${BASE_URL}/auth/login`, data, {
       headers: { 'Content-Type': 'application/json' },
@@ -19,5 +19,5 @@ export function useLogin() {
     });
     navigate('/repos')
     return response.data;
-  }, []);
+  }, [navigate]);
 }

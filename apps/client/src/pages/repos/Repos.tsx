@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
 import Repo from '../../entities/repo/Repo';
+import type { RepoData } from '../../entities/repo/Repo';
 import { useRepos } from '../../hooks/repos/useRepos';
 import { useEditRepo } from '../../hooks/repos/useEditRepo';
 import { useDeleteRepo } from '../../hooks/repos/useDeleteRepo';
 import { useAddRepo } from '../../hooks/repos/useAddRepo';
-import { UserContext } from '../../providers/UserProvider';
+import { UserContext } from '../../providers/UserContext';
 import EditRepoForm from '../../features/edit-repo-form/EditRepoForm';
 import CreateRepoForm from '../../features/create-repo-form/CreateRepoForm';
 import axios from 'axios';
@@ -18,11 +19,11 @@ const Repos: React.FC = () => {
   const deleteRepo = useDeleteRepo();
   const addRepo = useAddRepo();
   const { user, setUser } = useContext(UserContext);
-  const [repos, setRepos] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [repos, setRepos] = useState<RepoData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [editingRepo, setEditingRepo] = useState<any | null>(null);
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingRepo, setEditingRepo] = useState<RepoData | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const refetchRepos = () => {
@@ -39,30 +40,31 @@ const Repos: React.FC = () => {
 
   useEffect(() => {
     refetchRepos();
+    // eslint-disable-next-line
   }, [user?.username]);
 
-  const handleEdit = (repo: any) => {
+  const handleEdit = (repo: RepoData) => {
     setEditingRepo(repo);
   };
 
-  const handleEditSubmit = async (data: any) => {
+  const handleEditSubmit = async (data: Partial<Omit<RepoData, 'projectOwner' | 'dateTimeUTC'>>) => {
     if (!editingRepo) return;
     try {
       await editRepo(editingRepo.projectOwner, editingRepo.name, data);
       setEditingRepo(null);
       refetchRepos();
-    } catch (err: any) {
-      alert(err?.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) alert(err.message);
     }
   };
 
-  const handleDelete = async (repo: any) => {
+  const handleDelete = async (repo: RepoData) => {
     if (!window.confirm(`Delete repo ${repo.name}?`)) return;
     try {
       await deleteRepo(repo.projectOwner, repo.name);
       refetchRepos();
-    } catch (err: any) {
-      alert(err?.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) alert(err.message);
     }
   };
 
@@ -71,18 +73,18 @@ const Repos: React.FC = () => {
       await axios.get(`${BASE_URL}/auth/logout`, { withCredentials: true });
       setUser(null);
       navigate('/');
-    } catch (err: any) {
-      alert('Logout failed');
+    } catch (err: unknown) {
+      if (err instanceof Error) alert('Logout failed: ' + err.message);
     }
   };
 
-  const handleCreate = async (data: any) => {
+  const handleCreate = async (data: { name: string }) => {
     try {
       await addRepo(data);
       setShowCreateForm(false);
       refetchRepos();
-    } catch (err: any) {
-      alert(err?.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) alert(err.message);
     }
   };
 
