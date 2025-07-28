@@ -11,8 +11,8 @@ export class AuthController {
   @Post('/register')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async register(@Body() body: RegisterDto, @Res() res: Response) {
-    const { username, email, password } = body;
-    const { accessToken, refreshToken, user } = await this.authService.register(username, email, password);
+    const { username, email, password, githubKey } = body;
+    const { accessToken, refreshToken, user } = await this.authService.register(username, email, password, githubKey);
     res.cookie('access_token', accessToken, { httpOnly: true, sameSite: 'strict' });
     res.cookie('refresh_token', refreshToken, { httpOnly: true, sameSite: 'strict' });
     res.json({ user });

@@ -24,6 +24,7 @@ export class UserRepositoryMongo implements IUserRepository {
       username: user.username,
       email: user.email,
       password: user.password,
+      githubKey: user.githubKey,
     };
 
     const doc = await this.model.findOneAndUpdate(
@@ -35,6 +36,6 @@ export class UserRepositoryMongo implements IUserRepository {
   }
 
   private toDomain(doc: any): User {
-    return new User(doc.username, doc.email, doc.password);
+    return new User(doc.username, doc.email, doc.password, doc.githubKey);
   }
 }

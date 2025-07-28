@@ -13,4 +13,9 @@ export class RegisterDto {
   @MinLength(6)
   @MaxLength(64)
   password: string;
+
+  @IsString()
+  @MinLength(10)
+  @MaxLength(128)
+  githubKey: string;
 } 

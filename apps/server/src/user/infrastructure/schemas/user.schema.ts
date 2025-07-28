@@ -32,6 +32,9 @@ export class UserSchema extends Document {
 
   @Prop()
   password: string;
+
+  @Prop()
+  githubKey: string;
 }
 
 export const UserSchemaModel = SchemaFactory.createForClass(UserSchema);

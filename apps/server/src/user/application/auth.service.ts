@@ -4,6 +4,7 @@ import * as bcrypt from 'bcryptjs';
 import { UserService } from './user.service';
 import { User } from '../domain/entities/user.entity';
 import { config } from 'shared/config';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -11,9 +12,39 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
-  async register(username: string, email: string, password: string): Promise<{ accessToken: string; refreshToken: string; user: User }> {
+  async validateGithubKey(githubKey: string): Promise<boolean> {
+    try {
+      const response = await axios.get('https://api.github.com/user', {
+        headers: { Authorization: `token ${githubKey}` },
+      });
+      return response.status === 200;
+    } catch {
+      return false;
+    }
+  }
+
+  async validateGithubUsername(githubKey: string, username: string): Promise<boolean> {
+    try {
+      const response = await axios.get(`https://api.github.com/users/${username}`, {
+        headers: { Authorization: `token ${githubKey}` },
+      });
+      return response.status === 200;
+    } catch {
+      return false;
+    }
+  }
+
+  async register(username: string, email: string, password: string, githubKey: string): Promise<{ accessToken: string; refreshToken: string; user: User }> {
+    const isValidKey = await this.validateGithubKey(githubKey);
+    if (!isValidKey) {
+      throw new UnauthorizedException('Invalid GitHub key');
+    }
+    const isValidUsername = await this.validateGithubUsername(githubKey, username);
+    if (!isValidUsername) {
+      throw new UnauthorizedException('Username does not exist on GitHub');
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await this.userService.createUser(username, email, hashedPassword);
+    const user = await this.userService.createUser(username, email, hashedPassword, githubKey);
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
     return { accessToken, refreshToken, user };
