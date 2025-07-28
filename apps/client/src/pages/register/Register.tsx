@@ -1,0 +1,20 @@
+import AuthForm from '../../features/auth-form/AuthForm';
+import { Link } from 'react-router-dom';
+import styles from './register.module.css';
+import formStyles from '../../features/auth-form/auth-form.module.css';
+
+const Register = () => {
+  return (
+    <div className={styles.wrapper}>
+      <div>
+        <h2 className={formStyles.title}>Register</h2>
+        <AuthForm mode="register" />
+        <p style={{ marginTop: '1rem' }}>
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Register; 
