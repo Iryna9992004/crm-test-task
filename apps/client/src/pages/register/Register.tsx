@@ -10,7 +10,7 @@ const Register = () => {
         <h2 className={formStyles.title}>Register</h2>
         <AuthForm mode="register" />
         <p style={{ marginTop: '1rem' }}>
-          Already have an account? <Link to="/login">Login</Link>
+          Already have an account? <Link to="/">Login</Link>
         </p>
       </div>
     </div>

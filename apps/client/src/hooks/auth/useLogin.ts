@@ -1,4 +1,7 @@
 import { useCallback } from 'react';
+import axios from 'axios';
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 interface LoginData {
   email: string;
@@ -7,15 +10,10 @@ interface LoginData {
 
 export function useLogin() {
   return useCallback(async (data: LoginData) => {
-    const response = await fetch('/api/login', {
-      method: 'POST',
+    const response = await axios.post(`${BASE_URL}/auth/login`, data, {
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      withCredentials: true,
     });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Login failed');
-    }
-    return response.json();
+    return response.data;
   }, []);
 }

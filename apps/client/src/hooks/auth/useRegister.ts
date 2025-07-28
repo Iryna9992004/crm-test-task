@@ -1,21 +1,21 @@
 import { useCallback } from 'react';
+import axios from 'axios';
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 interface RegisterData {
   email: string;
   password: string;
+  username: string;
+  githubKey: string;
 }
 
 export function useRegister() {
   return useCallback(async (data: RegisterData) => {
-    const response = await fetch('/api/register', {
-      method: 'POST',
+    const response = await axios.post(`${BASE_URL}/auth/register`, data, {
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      withCredentials: true,
     });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Registration failed');
-    }
-    return response.json();
+    return response.data;
   }, []);
 }

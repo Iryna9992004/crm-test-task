@@ -11,6 +11,9 @@ interface ConfigI {
   github: {
     api: string;
   }
+  frontend: {
+    url: string;
+  }
 }
 
 export const config: ConfigI = {
@@ -22,5 +25,8 @@ export const config: ConfigI = {
   },
   github: {
     api: process.env.GITHUB_API || "some_url",
+  },
+  frontend: {
+    url: process.env.FRONTEND_URL || "",
   }
 };
