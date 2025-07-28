@@ -3,6 +3,8 @@ import { useLogin } from '../../hooks/auth/useLogin';
 import { useRegister } from '../../hooks/auth/useRegister';
 import { toast } from 'react-toastify';
 import styles from './auth-form.module.css';
+import { useContext } from 'react';
+import { UserContext } from '../../providers/UserProvider';
 
 interface AuthFormProps {
   mode: 'login' | 'register';
@@ -19,21 +21,25 @@ const AuthForm = ({ mode }: AuthFormProps) => {
   const { register: formRegister, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>();
   const login = useLogin();
   const registerUser = useRegister();
+  const { setUser } = useContext(UserContext);
 
   const onSubmit = async (data: FormValues) => {
     try {
+      let user;
       if (mode === 'login') {
-        await login({ email: data.email, password: data.password });
+        const res = await login({ email: data.email, password: data.password });
+        user = res.user;
       } else {
-        await registerUser({
+        const res = await registerUser({
           email: data.email,
           password: data.password,
           username: data.username!,
           githubKey: data.githubKey!,
         });
+        user = res.user;
       }
+      setUser(user);
     } catch (error: any) {
-      // Try to get the server's error message, fallback to Axios error message, then generic
       const serverMessage = error?.response?.data?.message;
       const axiosMessage = error?.message;
       toast.error(serverMessage || axiosMessage || 'Authentication failed');

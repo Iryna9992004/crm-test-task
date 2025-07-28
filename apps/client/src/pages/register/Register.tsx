@@ -1,7 +1,8 @@
-import AuthForm from '../../features/auth-form/AuthForm';
+
 import { Link } from 'react-router-dom';
 import styles from './register.module.css';
 import formStyles from '../../features/auth-form/auth-form.module.css';
+import AuthForm from '../../features/auth-form';
 
 const Register = () => {
   return (
