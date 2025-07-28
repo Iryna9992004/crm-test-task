@@ -19,6 +19,7 @@ const Repo: React.FC<RepoProps> = ({ projectOwner, name, stars, forks, issues, d
       padding: '1rem',
       marginBottom: '1rem',
       background: '#fff',
+      width: '100%',
       boxShadow: '0 2px 8px rgba(60,60,60,0.04)'
     }}>
       <h3 style={{ margin: 0, color: 'black' }}>{name}</h3>
