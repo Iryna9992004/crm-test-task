@@ -10,7 +10,6 @@ interface ConfigI {
   };
   github: {
     api: string;
-    api_key: string;
   }
 }
 
@@ -23,6 +22,5 @@ export const config: ConfigI = {
   },
   github: {
     api: process.env.GITHUB_API || "some_url",
-    api_key: process.env.GITHUB_API_KEY || "some_key",
   }
 };

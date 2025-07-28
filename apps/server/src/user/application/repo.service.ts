@@ -11,12 +11,12 @@ export class RepoService {
 
   constructor(private readonly repoRepository: RepoRepositoryMongo) {}
 
-  async fetchAndSaveGithubRepos(username: string): Promise<Repo[]> {
+  async fetchAndSaveGithubRepos(username: string, githubKey: string): Promise<Repo[]> {
     try {
       const url = `${config.github.api}/users/${username}/repos`;
       const response = await axios.get(url, {
         headers: {
-          Authorization: `token ${config.github.api_key}`,
+          Authorization: `token ${githubKey}`,
           Accept: 'application/vnd.github+json',
         },
       });
@@ -44,12 +44,12 @@ export class RepoService {
     }
   }
 
-  async create({ projectOwner, name, description, isPrivate }: CreateRepoDto): Promise<Repo | null> {
+  async create({ projectOwner, name, description, isPrivate }: CreateRepoDto, githubKey: string): Promise<Repo | null> {
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
       this.logger.error('Repository name is required and must not be blank.');
       throw new Error('Repository name is required and must not be blank.');
     }
-    const payload: any = {
+    const payload = {
       name: name.trim(),
       auto_init: true,
       description: description ?? '',
@@ -58,11 +58,11 @@ export class RepoService {
     this.logger.debug(`Creating repo with payload: ${JSON.stringify(payload)}`);
     try {
       const response = await axios.post(
-        'https://api.github.com/user/repos',
+        `${config.github.api}/user/repos`,
         payload,
         {
           headers: {
-            Authorization: `token ${config.github.api_key}`,
+            Authorization: `token ${githubKey}`,
             Accept: 'application/vnd.github+json',
             'Content-Type': 'application/json',
           },
@@ -99,19 +99,19 @@ export class RepoService {
       default_branch?: string;
       archived?: boolean;
     },
+    githubKey: string,
   ): Promise<Repo | null> {
     try {
-      // Filter out undefined values
       const payload = Object.fromEntries(
         Object.entries(updates).filter(([_, value]) => value !== undefined)
       );
 
       const response = await axios.patch(
-        `https://api.github.com/repos/${projectOwner}/${name}`,
+        `${config.github.api}/repos/${projectOwner}/${name}`,
         payload,
         {
           headers: {
-            Authorization: `token ${config.github.api_key}`,
+            Authorization: `token ${githubKey}`,
             Accept: 'application/vnd.github+json',
             'Content-Type': 'application/json',
           },
@@ -128,7 +128,6 @@ export class RepoService {
         new Date(repo.created_at).toISOString(),
       );
 
-      // Update in database - handle potential name change
       if (updates.name && updates.name !== name) {
         await this.repoRepository.deleteByName(name);
       }
@@ -142,13 +141,13 @@ export class RepoService {
     }
   }
 
-  async delete(projectOwner: string, name: string): Promise<boolean> {
+  async delete(projectOwner: string, name: string, githubKey: string): Promise<boolean> {
     try {
       await axios.delete(
-        `https://api.github.com/repos/${projectOwner}/${name}`,
+        `${config.github.api}/repos/${projectOwner}/${name}`,
         {
           headers: {
-            Authorization: `token ${config.github.api_key}`,
+            Authorization: `token ${githubKey}`,
             Accept: 'application/vnd.github+json',
           },
         }
@@ -163,14 +162,13 @@ export class RepoService {
     }
   }
 
-  // Additional utility methods
-  async getRepo(projectOwner: string, name: string): Promise<Repo | null> {
+  async getRepo(projectOwner: string, name: string, githubKey: string): Promise<Repo | null> {
     try {
       const response = await axios.get(
-        `https://api.github.com/repos/${projectOwner}/${name}`,
+        `${config.github.api}/repos/${projectOwner}/${name}`,
         {
           headers: {
-            Authorization: `token ${config.github.api_key}`,
+            Authorization: `token ${githubKey}`,
             Accept: 'application/vnd.github+json',
           },
         }
@@ -191,11 +189,11 @@ export class RepoService {
     }
   }
 
-  async archiveRepo(projectOwner: string, name: string): Promise<boolean> {
-    return !!(await this.edit(projectOwner, name, { archived: true }));
+  async archiveRepo(projectOwner: string, name: string, githubKey: string): Promise<boolean> {
+    return !!(await this.edit(projectOwner, name, { archived: true }, githubKey));
   }
 
-  async unarchiveRepo(projectOwner: string, name: string): Promise<boolean> {
-    return !!(await this.edit(projectOwner, name, { archived: false }));
+  async unarchiveRepo(projectOwner: string, name: string, githubKey: string): Promise<boolean> {
+    return !!(await this.edit(projectOwner, name, { archived: false }, githubKey));
   }
 }

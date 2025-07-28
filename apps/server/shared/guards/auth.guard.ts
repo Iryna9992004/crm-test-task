@@ -12,7 +12,11 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('No access token');
     }
     try {
-      jwt.verify(token, config.jwt.secret);
+      const payload = jwt.verify(token, config.jwt.secret) as {sub: string, email: string};
+      request['user'] = {
+        username: payload.sub,
+        email: payload.email,
+      };
       return true;
     } catch (err) {
       throw new UnauthorizedException('Invalid or expired access token');
