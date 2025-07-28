@@ -6,13 +6,14 @@ import {
   Delete,
   Param,
   Body,
-  UsePipes,
-  ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { RepoService } from '../application/repo.service';
 import { CreateRepoDto } from './dto/repo/create.dto';
 import { EditRepoDto } from './dto/repo/edit.dto';
+import { AuthGuard } from 'shared/guards/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('repo')
 export class RepoController {
   constructor(private readonly repoService: RepoService) {}
@@ -25,7 +26,7 @@ export class RepoController {
 
   @Post('/create')
   async create(@Body() body: CreateRepoDto) {
-    console.log('Received body:', body); // Debug log
+    console.log('Received body:', body);
     const saved = await this.repoService.create(body);
     if (!saved) return { message: 'Error creating repo' };
     return {
@@ -39,7 +40,6 @@ export class RepoController {
   }
 
   @Put('update/:projectOwner/:name')
-  @UsePipes(new ValidationPipe({ whitelist: true }))
   async edit(
     @Param('projectOwner') projectOwner: string,
     @Param('name') name: string,
