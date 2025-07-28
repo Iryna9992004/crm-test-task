@@ -21,12 +21,12 @@ const Repo: React.FC<RepoProps> = ({ projectOwner, name, stars, forks, issues, d
       background: '#fff',
       boxShadow: '0 2px 8px rgba(60,60,60,0.04)'
     }}>
-      <h3 style={{ margin: 0 }}>{name}</h3>
+      <h3 style={{ margin: 0, color: 'black' }}>{name}</h3>
       <p style={{ margin: '0.5rem 0 0.25rem 0', color: '#555' }}>Owner: {projectOwner}</p>
       <div style={{ display: 'flex', gap: '1.5rem', margin: '0.5rem 0' }}>
-        <span>⭐ {stars}</span>
-        <span>🍴 {forks}</span>
-        <span>🐞 {issues}</span>
+        <span style={{ margin: 0, color: 'black' }}>⭐ {stars}</span>
+        <span style={{ margin: 0, color: 'black' }}>🍴 {forks}</span>
+        <span style={{ margin: 0, color: 'black' }}>🐞 {issues}</span>
       </div>
       <div style={{ fontSize: '0.9rem', color: '#888', marginBottom: '0.75rem' }}>Last updated: {new Date(dateTimeUTC).toLocaleString()}</div>
       <div style={{ display: 'flex', gap: '0.5rem' }}>
